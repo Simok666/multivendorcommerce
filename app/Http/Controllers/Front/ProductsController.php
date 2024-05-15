@@ -23,6 +23,8 @@ use App\Models\Country;
 use App\Models\ShippingCharge;
 use App\Models\OrdersProduct;
 
+use App\Services\Midtrans\CreateSnapTokenService;
+
 class ProductsController extends Controller
 {
     // match() method is used for the HTTP 'GET' requests to render listing.blade.php page and the HTTP 'POST' method for the AJAX request of the Sorting Filter or the HTML Form submission and jQuery for the Sorting Filter WITHOUT AJAX, AND ALSO for submitting the Search Form in listing.blade.php    // e.g.    /men    or    /computers    
@@ -1026,7 +1028,6 @@ class ProductsController extends Controller
             // Store the $grand_total in Session to be able to use it wherever we need it later on (for example, it'll be used in front/paypal/paypal.blade.php and front/iyzipay/iyzipay.blade.php)
             Session::put('grand_total', $grand_total); // Storing Data: https://laravel.com/docs/10.x/session#storing-data
 
-
             // INSERT the data we collected INTO the `orders` database table
             $order = new Order; // Create a new Order.php model object (represents the `orders` table)
 
@@ -1047,6 +1048,8 @@ class ProductsController extends Controller
             $order->payment_method   = $payment_method;
             $order->payment_gateway  = $data['payment_gateway'];
             $order->grand_total      = $grand_total;
+            
+            
 
             $order->save(); // INSERT data INTO the `orders` table
 
@@ -1119,6 +1122,21 @@ class ProductsController extends Controller
 
             // echo 'Order placed successfully!';
             // exit;
+            
+            if($data['payment_gateway'] == 'midtrans') {
+                DB::beginTransaction();
+                    $snapToken = $order->snap_token;
+                    if(is_null($snapToken)) {
+                        
+                        $midtrans = new CreateSnapTokenService($order);
+                        $snapToken = $midtrans->getSnapToken();
+
+                        $order->snap_token = $snapToken;
+                        
+                    }
+                $order->save();
+                DB::commit();
+            }
 
 
             // Send placing an order confirmation email to the user    
@@ -1160,6 +1178,10 @@ class ProductsController extends Controller
             } elseif ($data['payment_gateway'] == 'iyzipay') {
                 // redirect the user to the IyzipayController.php (after saving the order details in `orders` and `orders_products` tables)
                 return redirect('/iyzipay');
+
+            } elseif ($data['payment_gateway'] == 'midtrans') {
+                
+                return view('front.orders.show', compact('order', 'snapToken'));
 
             } else { // if the `payment_gateway` selected by the user is not 'COD', meaning it's like PayPal, Prepaid, ... (in front/products/checkout.blade.php), we send the placing the order confirmation email and SMS after the user makes the payment
                 echo 'Other Prepaid payment methods coming soon';

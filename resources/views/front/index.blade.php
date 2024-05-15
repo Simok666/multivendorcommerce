@@ -3,6 +3,13 @@
 
 
 @section('content')
+    <?php $message = Session::get('message'); ?>
+    @if(!is_null($message))
+    <div class="alert alert-success" role="alert">
+      Status Message :  {{$message->status_message ?? null}}
+      Transaction Status :  {{$message->transaction_status ?? null}}
+    </div>
+    @endif
     <!-- Main-Slider -->
     <div class="default-height ph-item">
         <div class="slider-main owl-carousel">

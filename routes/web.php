@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MidtransCallback\PaymentCallbackController;
 
 /*
 |--------------------------------------------------------------------------
@@ -179,8 +180,14 @@ Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function
 Route::get('orders/invoice/download/{id}', 'App\Http\Controllers\Admin\OrderController@viewPDFInvoice');
 
 
-
-
+// handling after payment midtrans
+Route::post('payments/midtrans-notification', [PaymentCallbackController::class, 'receive']);
+// handling finish payment url
+Route::get('payments/finish', [PaymentCallbackController::class, 'finish']);
+// handling unfinish payment url
+Route::get('payments/unfinish', [PaymentCallbackController::class, 'unfinish']);
+// handling error payment url
+Route::get('payments/error', [PaymentCallbackController::class, 'error']);
 
 
 // Second: FRONT section routes:
@@ -320,4 +327,5 @@ Route::namespace('App\Http\Controllers\Front')->group(function() {
         Route::get('iyzipay/pay', 'IyzipayController@pay'); 
     });
 
+    
 });

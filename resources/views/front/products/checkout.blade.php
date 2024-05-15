@@ -198,6 +198,11 @@
                                             <label class="label-text" for="iyzipay">iyzipay</label>
                                         </div>
 
+                                        <div class="u-s-m-b-13 prepaidMethod"> {{-- We added the prepaidMethod CSS class to disable that payment method (check front/js/custom.js) if the PIN code of that user's Delivery Address doesn't exist in our `prepaid_pincodes` database table --}}
+                                            <input type="radio" class="radio-box" name="payment_gateway" id="midtrans" value="midtrans">
+                                            <label class="label-text" for="midtrans">midtrans</label>
+                                        </div>
+
 
                                         <div class="u-s-m-b-13">
                                             <input type="checkbox" class="check-box" id="accept" name="accept" value="Yes" title="Please agree to T&C">
