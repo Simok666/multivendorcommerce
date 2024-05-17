@@ -22,6 +22,10 @@ use App\Models\User;
 use App\Models\Country;
 use App\Models\ShippingCharge;
 use App\Models\OrdersProduct;
+use App\Models\City;
+use App\Models\Province;
+
+use App\Services\Midtrans\CreateSnapTokenService;
 
 class ProductsController extends Controller
 {
@@ -872,6 +876,9 @@ class ProductsController extends Controller
         // Fetch all of the world countries from the database table `countries`
         $countries = Country::where('status', 1)->get()->toArray(); // get the countries which have status = 1 (to ignore the blacklisted countries, in case)
         
+        $cities =  City::get()->toArray();
+        $provinces = Province::get()->toArray();
+
         // Get the Cart Items of a cerain user (using their `user_id` if they're authenticated/logged in or their `session_id` if they're not authenticated/not logged in (guest))    
         $getCartItems = Cart::getCartItems();
 
@@ -899,7 +906,7 @@ class ProductsController extends Controller
 
         $deliveryAddresses = DeliveryAddress::deliveryAddresses(); // the delivery addresses of the currently authenticated/logged in user
 
-
+        $getCityDestinationId = [];
         // Calculating the Shipping Charges of every one of the user's Delivery Addresses (depending on the 'country' of the Delivery Address)    
         foreach ($deliveryAddresses as $key => $value) {
             $shippingCharges = ShippingCharge::getShippingCharges($total_weight, $value['country']);
@@ -915,11 +922,11 @@ class ProductsController extends Controller
             $deliveryAddresses[$key]['prepaidpincodeCount'] = DB::table('prepaid_pincodes')->where('pincode', $value['pincode'])->count(); // Note that    $value['pincode']    denotes the `pincode` of the `delivery_addresses` table
         }
 
-
+        
         
         if ($request->isMethod('post')) { // if the <form> in front/products/checkout.blade.php is submitted (the HTML Form that the user submits to submit their Delivery Address and Payment Method)
             $data = $request->all();
-
+            
             // Website Security
             // Note: We need to prevent orders (upon checkout and payment) of the 'disabled' products (`status` = 0), where the product ITSELF can be disabled in admin/products/products.blade.php (by checking the `products` database table) or a product's attribute (`stock`) can be disabled in 'admin/attributes/add_edit_attributes.blade.php' (by checking the `products_attributes` database table). We also prevent orders of the out of stock / sold-out products (by checking the `products_attributes` database table)
             foreach ($getCartItems as $item) {
@@ -957,6 +964,18 @@ class ProductsController extends Controller
             // Delivery Address Validation
             if (empty($data['address_id'])) { // if the user doesn't select a Delivery Address
                 $message = 'Please select Delivery Address!';
+
+                return redirect()->back()->with('error_message', $message);
+            }
+
+            if(empty($data['shipping_charges']) || $data['shipping_charges'] == null || $data['grand_total'] == null) {
+                $message = 'Please select PickUp!';
+
+                return redirect()->back()->with('error_message', $message);
+            }
+
+            if(empty($data['shipping_charges'])) {
+                $message = 'Please select PickUp!';
 
                 return redirect()->back()->with('error_message', $message);
             }
@@ -1026,7 +1045,6 @@ class ProductsController extends Controller
             // Store the $grand_total in Session to be able to use it wherever we need it later on (for example, it'll be used in front/paypal/paypal.blade.php and front/iyzipay/iyzipay.blade.php)
             Session::put('grand_total', $grand_total); // Storing Data: https://laravel.com/docs/10.x/session#storing-data
 
-
             // INSERT the data we collected INTO the `orders` database table
             $order = new Order; // Create a new Order.php model object (represents the `orders` table)
 
@@ -1040,13 +1058,18 @@ class ProductsController extends Controller
             $order->pincode          = $deliveryAddress['pincode'];
             $order->mobile           = $deliveryAddress['mobile'];
             $order->email            = Auth::user()->email; // Retrieving The Authenticated User: https://laravel.com/docs/9.x/authentication#retrieving-the-authenticated-user
-            $order->shipping_charges = $shipping_charges;
+            // $order->shipping_charges = $shipping_charges;
+            $order->shipping_charges = $data['shipping_charges'];
             $order->coupon_code      = Session::get('couponCode');   // it was set inside applyCoupon() method
             $order->coupon_amount    = Session::get('couponAmount'); // it was set inside applyCoupon() method
             $order->order_status     = $order_status;
             $order->payment_method   = $payment_method;
             $order->payment_gateway  = $data['payment_gateway'];
-            $order->grand_total      = $grand_total;
+            // $order->grand_total      = $grand_total;
+            $order->grand_total      =  $data['grand_total'];
+           
+            
+            
 
             $order->save(); // INSERT data INTO the `orders` table
 
@@ -1119,6 +1142,21 @@ class ProductsController extends Controller
 
             // echo 'Order placed successfully!';
             // exit;
+            
+            if($data['payment_gateway'] == 'midtrans') {
+                DB::beginTransaction();
+                    $snapToken = $order->snap_token;
+                    if(is_null($snapToken)) {
+                        
+                        $midtrans = new CreateSnapTokenService($order);
+                        $snapToken = $midtrans->getSnapToken();
+
+                        $order->snap_token = $snapToken;
+                        
+                    }
+                $order->save();
+                DB::commit();
+            }
 
 
             // Send placing an order confirmation email to the user    
@@ -1161,6 +1199,10 @@ class ProductsController extends Controller
                 // redirect the user to the IyzipayController.php (after saving the order details in `orders` and `orders_products` tables)
                 return redirect('/iyzipay');
 
+            } elseif ($data['payment_gateway'] == 'midtrans') {
+                
+                return view('front.orders.show', compact('order', 'snapToken'));
+
             } else { // if the `payment_gateway` selected by the user is not 'COD', meaning it's like PayPal, Prepaid, ... (in front/products/checkout.blade.php), we send the placing the order confirmation email and SMS after the user makes the payment
                 echo 'Other Prepaid payment methods coming soon';
             }
@@ -1170,7 +1212,7 @@ class ProductsController extends Controller
         }
 
 
-        return view('front.products.checkout')->with(compact('deliveryAddresses', 'countries', 'getCartItems', 'total_price'));
+        return view('front.products.checkout')->with(compact('deliveryAddresses', 'countries', 'cities', 'provinces','getCartItems', 'total_price'));
     }
 
 

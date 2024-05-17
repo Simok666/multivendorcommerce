@@ -76,7 +76,7 @@
                                         @foreach ($deliveryAddresses as $address)
                                             <div class="control-group" style="float: left; margin-right: 5px">
                                                 {{-- We'll use the Custom HTML data attributes:    shipping_charges    ,    total_price    ,    coupon_amount    ,    codpincodeCount    and    prepaidpincodeCount    to use them as handles for jQuery to change the calculations in "Your Order" section using jQuery. Check front/js/custom.js file --}}  
-                                                <input type="radio" id="address{{ $address['id'] }}" name="address_id" value="{{ $address['id'] }}" shipping_charges="{{ $address['shipping_charges'] }}" total_price="{{ $total_price }}" coupon_amount="{{ \Illuminate\Support\Facades\Session::get('couponAmount') }}" codpincodeCount="{{ $address['codpincodeCount'] }}" prepaidpincodeCount="{{ $address['prepaidpincodeCount'] }}"> {{-- $total_price variable is passed in from checkout() method in Front/ProductsController.php --}} {{-- We created the Custom HTML Attribute id="address{{ $address['id'] }}" to get the UNIQUE ids of the addresses in order for the <label> HTML element to be able to point for that <input> --}}
+                                                <input type="radio" id="address{{ $address['id'] }}" name="address_id" value="{{ $address['id'] }}" shipping_charges="{{ $address['shipping_charges'] }}" total_price="{{ $total_price }}" coupon_amount="{{ \Illuminate\Support\Facades\Session::get('couponAmount') }}" codpincodeCount="{{ $address['codpincodeCount'] }}" prepaidpincodeCount="{{ $address['prepaidpincodeCount'] }}" checked > {{-- $total_price variable is passed in from checkout() method in Front/ProductsController.php --}} {{-- We created the Custom HTML Attribute id="address{{ $address['id'] }}" to get the UNIQUE ids of the addresses in order for the <label> HTML element to be able to point for that <input> --}}
                                             </div>
                                             <div>
                                                 <label class="control-label" for="address{{ $address['id'] }}">
@@ -88,9 +88,32 @@
                                         @endforeach
                                         <br>
                                     @endif 
+                                    
+                                    <h4 class="section-h4">Pick Courier</h4>
+                                    <div class="order-table">
+                                        <table class="u-s-m-b-13">
+                                            <div class="col-md-12">
+                                                <div class="select-box-wrapper">
+                                                    <select class="select-box" name="courier" id="courier">
+                                                        <option >Choose Courier</option>
+                                                        <option value="jne" selected="selected">JNE</option>
+                                                        <option value="pos">POS</option>
+                                                        <option value="tiki">TIKI</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </table>
+                                    </div>
 
+                                    <h4 class="section-h4">Chooes PickUp</h4>
+                                    <div class="order-table">
+                                        <div id="result-courier"></div>
+                                    </div>
+
+                                   
 
                                     <h4 class="section-h4">Your Order</h4>
+                                  
                                     <div class="order-table">
                                         <table class="u-s-m-b-13">
                                             <thead>
@@ -149,7 +172,8 @@
                                                     </td>
                                                     <td>
                                                         <h6 class="order-h6">
-                                                            <span class="shipping_charges">EGP0</span>
+                                                            <input class="text-field" type="hidden" id="shipping_charges" name="shipping_charges" value=""> 
+                                                            <span class="shipping_charges"></span>
                                                         </h6>
                                                     </td>
                                                 </tr>
@@ -174,7 +198,9 @@
                                                     </td>
                                                     <td>
                                                         <h3 class="order-h3">
-                                                            <strong class="grand_total">EGP{{ $total_price - \Illuminate\Support\Facades\Session::get('couponAmount') }}</strong> {{-- We create the 'grand_total' CSS class to use it as a handle for AJAX inside    $('#applyCoupon').submit();    function in front/js/custom.js --}} {{-- We stored the 'couponAmount' a Session Variable inside the applyCoupon() method in Front/ProductsController.php --}}
+                                                            <input class="text-field" type="hidden" id="price_static" name="price" value="{{$total_price - \Illuminate\Support\Facades\Session::get('couponAmount')}}"> 
+                                                            <input class="text-field" type="hidden" id="grand_total" name="grand_total" value=""> 
+                                                            <strong class="grand_total"></strong> {{-- We create the 'grand_total' CSS class to use it as a handle for AJAX inside    $('#applyCoupon').submit();    function in front/js/custom.js --}} {{-- We stored the 'couponAmount' a Session Variable inside the applyCoupon() method in Front/ProductsController.php --}}
                                                         </h3>
                                                     </td>
                                                 </tr>
@@ -196,6 +222,11 @@
                                         <div class="u-s-m-b-13 prepaidMethod"> {{-- We added the prepaidMethod CSS class to disable that payment method (check front/js/custom.js) if the PIN code of that user's Delivery Address doesn't exist in our `prepaid_pincodes` database table --}}
                                             <input type="radio" class="radio-box" name="payment_gateway" id="iyzipay" value="iyzipay">
                                             <label class="label-text" for="iyzipay">iyzipay</label>
+                                        </div>
+
+                                        <div class="u-s-m-b-13 prepaidMethod"> {{-- We added the prepaidMethod CSS class to disable that payment method (check front/js/custom.js) if the PIN code of that user's Delivery Address doesn't exist in our `prepaid_pincodes` database table --}}
+                                            <input type="radio" class="radio-box" name="payment_gateway" id="midtrans" value="midtrans">
+                                            <label class="label-text" for="midtrans">midtrans</label>
                                         </div>
 
 
@@ -221,4 +252,11 @@
         </div>
     </div>
     <!-- Checkout-Page /- -->
+
+    <script>
+        // $(document).ready(function() {
+        //     let deliveryAddress = $('input[name="address_id"]:checked').value;
+        //     console.log(deliveryAddress);
+        // });
+    </script>   
 @endsection

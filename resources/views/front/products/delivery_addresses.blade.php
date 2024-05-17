@@ -46,15 +46,37 @@
                     <label for="delivery_city">City
                         <span class="astk">*</span>
                     </label>
-                    <input class="text-field" type="text" id="delivery_city" name="delivery_city">
-                    <p id="delivery-delivery_city"></p>                         {{-- This <p> tag will be used by jQuery to show the Validation Error Messages (Laravel's Validation Error Messages) from the AJAX call response from the server (backend) --}} {{-- We structure and use a certain pattern so that the <p> id pattern must be like: delivery-x (e.g. delivery-mobile, delivery-email, ... in order for the jQuery loop to work. And x must be identical to the 'name' HTML attributes (e.g. the <input> with the    name='mobile'    HTML attribute must have a <p> with an id HTML attribute    id="delivery-mobile"    ) so that when the vaildation errors array is sent as a response from backend/server (check $validator->messages()    inside    the method inside the controller) to the AJAX request, they could conveniently/easily be handled by the jQuery $.each() loop. Check front/js/custom.js) --}}                    
+                    <div class="select-box-wrapper">
+                        <select class="select-box" id="delivery_city" name="delivery_city">
+                            <option value="">Select City</option>
+                            
+                            @foreach ($cities as $city) {{-- $countries was passed from UserController to view using compact() method --}}
+                                <option value="{{ $city['name'] }}"  @if ($city['name'] == \Illuminate\Support\Facades\Auth::user()->city) selected @endif>{{ $city['name'] }}</option>
+                            @endforeach
+    
+                        </select>
+                    </div>
+                    {{-- <input class="text-field" type="text" id="delivery_city" name="delivery_city"> --}}
+                    {{-- <p id="delivery-delivery_city"></p>      --}}
+                                        {{-- This <p> tag will be used by jQuery to show the Validation Error Messages (Laravel's Validation Error Messages) from the AJAX call response from the server (backend) --}} {{-- We structure and use a certain pattern so that the <p> id pattern must be like: delivery-x (e.g. delivery-mobile, delivery-email, ... in order for the jQuery loop to work. And x must be identical to the 'name' HTML attributes (e.g. the <input> with the    name='mobile'    HTML attribute must have a <p> with an id HTML attribute    id="delivery-mobile"    ) so that when the vaildation errors array is sent as a response from backend/server (check $validator->messages()    inside    the method inside the controller) to the AJAX request, they could conveniently/easily be handled by the jQuery $.each() loop. Check front/js/custom.js) --}}                    
                 </div>
                 <div class="group-2">
                     <label for="delivery_state">State
                         <span class="astk">*</span>
                     </label>
-                    <input class="text-field" type="text" id="delivery_state" name="delivery_state">
-                    <p id="delivery-delivery_state"></p>                        {{-- This <p> tag will be used by jQuery to show the Validation Error Messages (Laravel's Validation Error Messages) from the AJAX call response from the server (backend) --}} {{-- We structure and use a certain pattern so that the <p> id pattern must be like: delivery-x (e.g. delivery-mobile, delivery-email, ... in order for the jQuery loop to work. And x must be identical to the 'name' HTML attributes (e.g. the <input> with the    name='mobile'    HTML attribute must have a <p> with an id HTML attribute    id="delivery-mobile"    ) so that when the vaildation errors array is sent as a response from backend/server (check $validator->messages()    inside    the method inside the controller) to the AJAX request, they could conveniently/easily be handled by the jQuery $.each() loop. Check front/js/custom.js) --}}                    
+                    <div class="select-box-wrapper">
+                        <select class="select-box" id="delivery_state" name="delivery_state">
+                            <option value="">Select Province</option>
+                            
+                            @foreach ($provinces as $province) {{-- $countries was passed from UserController to view using compact() method --}}
+                                <option value="{{ $province['name'] }}"  @if ($province['name'] == \Illuminate\Support\Facades\Auth::user()->state) selected @endif>{{ $province['name'] }}</option>
+                            @endforeach
+    
+                        </select>
+                    </div>
+                    {{-- <input class="text-field" type="text" id="delivery_state" name="delivery_state">
+                    <p id="delivery-delivery_state"></p>      --}}
+                                       {{-- This <p> tag will be used by jQuery to show the Validation Error Messages (Laravel's Validation Error Messages) from the AJAX call response from the server (backend) --}} {{-- We structure and use a certain pattern so that the <p> id pattern must be like: delivery-x (e.g. delivery-mobile, delivery-email, ... in order for the jQuery loop to work. And x must be identical to the 'name' HTML attributes (e.g. the <input> with the    name='mobile'    HTML attribute must have a <p> with an id HTML attribute    id="delivery-mobile"    ) so that when the vaildation errors array is sent as a response from backend/server (check $validator->messages()    inside    the method inside the controller) to the AJAX request, they could conveniently/easily be handled by the jQuery $.each() loop. Check front/js/custom.js) --}}                    
                 </div>
             </div>
             <div class="u-s-m-b-13">
@@ -64,7 +86,7 @@
                 <div class="select-box-wrapper">
                     <select class="select-box" id="delivery_country" name="delivery_country">
                         <option value="">Select Country</option>
-
+                        
                         @foreach ($countries as $country) {{-- $countries was passed from UserController to view using compact() method --}}
                             <option value="{{ $country['country_name'] }}"  @if ($country['country_name'] == \Illuminate\Support\Facades\Auth::user()->country) selected @endif>{{ $country['country_name'] }}</option>
                         @endforeach
