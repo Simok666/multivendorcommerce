@@ -4,6 +4,7 @@ namespace App\Services\Midtrans;
 
 use Midtrans\Snap;
 use App\Models\OrdersProduct;
+use Illuminate\Support\Facades\Log;
 
 class CreateSnapTokenService extends Midtrans 
 {
@@ -18,21 +19,22 @@ class CreateSnapTokenService extends Midtrans
 
     public function getSnapToken() 
     {
+        
         $item_details = OrdersProduct::where('order_id', $this->order->id)->get();
         $details = [];
         foreach ($item_details as $key => $value) {
             $details[] = [
                 'id' => $value->product_id,
-                'price' => $value->product_price,
+                'price' => round($value->product_price),
                 'quantity' => $value->product_qty,
                 'name' => $value->product_name
             ];
         }
 
-        $params = [
+        $transactionDetails = [
                 'transaction_details' => [
                     'order_id' => $this->order->id,
-                    'gross_amount' => $this->order->grand_total,
+                    'gross_amount' => round($this->order->grand_total),
                 ],
                 'item_details' => $details , 
                 'customer_details' => [
@@ -42,8 +44,15 @@ class CreateSnapTokenService extends Midtrans
                 ]
             ];
 
-            $snapToken = Snap::getSnapToken($params);
-            
+            $transactionDetails['item_details'][] = [
+                'id' => 'shipping',
+                'price' => $this->order->shipping_charges,
+                'quantity' => 1,
+                'name' => 'Shipping Charges',
+            ];
+
+            $snapToken = Snap::getSnapToken($transactionDetails);
+            Log::channel('custom')->info(json_encode($snapToken));
             return $snapToken;
     }
 }

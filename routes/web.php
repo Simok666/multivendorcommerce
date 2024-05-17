@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MidtransCallback\PaymentCallbackController;
+use App\Http\Controllers\RajaOngkir\CheckOngkirController;
 
 /*
 |--------------------------------------------------------------------------
@@ -325,6 +326,8 @@ Route::namespace('App\Http\Controllers\Front')->group(function() {
 
         // Make an iyzipay payment (redirect the user to iyzico payment gateway with the order details)
         Route::get('iyzipay/pay', 'IyzipayController@pay'); 
+
+        Route::get('rajaongkir/checkongkir', [CheckOngkirController::class, 'checkOngkir'])->name('check-ongkir');
     });
 
     
