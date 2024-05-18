@@ -52,7 +52,7 @@ class CreateSnapTokenService extends Midtrans
             ];
 
             $snapToken = Snap::getSnapToken($transactionDetails);
-            Log::channel('custom')->info(json_encode($snapToken));
+
             return $snapToken;
     }
 }

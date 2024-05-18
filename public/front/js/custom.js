@@ -204,7 +204,7 @@ $(document).ready(function() {
             data   : formdata, // Sending name/value pairs to server with the AJAX request (AJAX call)
             success: function(resp) { // if the AJAX request is successful
                 // Showing Validation Errors in the view (from the backend/server response of our AJAX request):
-                
+                // console.log('tes')
                 if (resp.type == 'error') { // if there're Validation Errors (login fails), show the Validation Error Messages (each of them under its respective <input> field)    // 'type' is sent as a PHP array key (in the HTTP response from the server (backend)) from inside the userRegister() method in Front/UserController.php
                     // Hide our Preloader/Loader/Loading Page/Preloading Screen when there's an error    
                     $('.loader').hide();
@@ -232,7 +232,7 @@ $(document).ready(function() {
                 } else if (resp.type == 'success') { // if there're no validation errors (login is successful), redirect to the Cart page    // 'type' is sent as a PHP array key (in the HTTP response from the server (backend)) from inside the userRegister() method in Front/UserController.php
                     // Hide our Preloader/Loader/Loading Page/Preloading Screen when the response is 'success'    
                     $('.loader').hide();
-
+                    // console.log(resp.message)
                     $('#register-success').attr('style', 'color: green'); // I already did this in the HTML page in the <p> tags in the HTML in front/users/login_register.blade.php (    <p id="login-name" style="color: red"></p>    )    // This is the same as:    $('#login-' + i).css('color', 'green');    // Change the CSS color of the <p> tags
                     $('#register-success').html(resp.message); // replace the <p> tags that we created inside the user registration <form> in front/users/login_register.blade.php depending on x in their 'id' HTML attributes 'login-x' (e.g. login-mobile, login-email, ...)
                 }

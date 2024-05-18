@@ -10,9 +10,10 @@ use Illuminate\Support\Facades\Log;
 
 class PaymentCallbackController extends Controller
 {
-    public function receive()
-    {
-        $callback = new CallbackService;
+    public function receive(Request $request)
+    {  
+        $callBackRequest = $request->all();
+        $callback = new CallbackService($callBackRequest);
         
         if($callback->isSignatureKeyVerified()) {
             
@@ -37,7 +38,7 @@ class PaymentCallbackController extends Controller
                 ]);
             }
             
-            Order::save();
+            // Order::save();
 
             return response()->json([
                 'success' => true,

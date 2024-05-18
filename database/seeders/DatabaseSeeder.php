@@ -48,5 +48,7 @@ class DatabaseSeeder extends Seeder
         $this->call(OrderItemStatusTableSeeder::class);      
         $this->call(NewsletterSubscriberTableSeeder::class); 
         $this->call(RatingsTableSeeder::class);        
+        $this->call(ProvinceSeeder::class);        
+        $this->call(CitySeeder::class);        
     }
 }
