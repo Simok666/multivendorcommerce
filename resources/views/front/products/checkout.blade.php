@@ -208,21 +208,21 @@
 
                                             </tbody>
                                         </table>
-                                        <div class="u-s-m-b-13 codMethod"> {{-- We added the codMethod CSS class to disable that payment method (check front/js/custom.js) if the PIN code of that user's Delivery Address doesn't exist in our `cod_pincodes` database table --}}
-                                            <input type="radio" class="radio-box" name="payment_gateway" id="cash-on-delivery" value="COD">
-                                            <label class="label-text" for="cash-on-delivery">Cash on Delivery</label>
-                                        </div>
-                                        <div class="u-s-m-b-13 prepaidMethod"> {{-- We added the prepaidMethod CSS class to disable that payment method (check front/js/custom.js) if the PIN code of that user's Delivery Address doesn't exist in our `prepaid_pincodes` database table --}}
-                                            <input type="radio" class="radio-box" name="payment_gateway" id="paypal" value="Paypal">
-                                            <label class="label-text" for="paypal">PayPal</label>
-                                        </div>
+                                        {{-- <div class="u-s-m-b-13 codMethod"> We added the codMethod CSS class to disable that payment method (check front/js/custom.js) if the PIN code of that user's Delivery Address doesn't exist in our `cod_pincodes` database table --}}
+                                            {{-- <input type="radio" class="radio-box" name="payment_gateway" id="cash-on-delivery" value="COD"> --}}
+                                            {{-- <label class="label-text" for="cash-on-delivery">Cash on Delivery</label> --}}
+                                        {{-- </div> --}}
+                                        {{-- <div class="u-s-m-b-13 prepaidMethod"> We added the prepaidMethod CSS class to disable that payment method (check front/js/custom.js) if the PIN code of that user's Delivery Address doesn't exist in our `prepaid_pincodes` database table --}}
+                                            {{-- <input type="radio" class="radio-box" name="payment_gateway" id="paypal" value="Paypal"> --}}
+                                            {{-- <label class="label-text" for="paypal">PayPal</label> --}}
+                                        {{-- </div> --}}
 
 
                                         {{-- iyzico Payment Gateway integration in/with Laravel --}}
-                                        <div class="u-s-m-b-13 prepaidMethod"> {{-- We added the prepaidMethod CSS class to disable that payment method (check front/js/custom.js) if the PIN code of that user's Delivery Address doesn't exist in our `prepaid_pincodes` database table --}}
-                                            <input type="radio" class="radio-box" name="payment_gateway" id="iyzipay" value="iyzipay">
-                                            <label class="label-text" for="iyzipay">iyzipay</label>
-                                        </div>
+                                        {{-- <div class="u-s-m-b-13 prepaidMethod"> We added the prepaidMethod CSS class to disable that payment method (check front/js/custom.js) if the PIN code of that user's Delivery Address doesn't exist in our `prepaid_pincodes` database table --}}
+                                            {{-- <input type="radio" class="radio-box" name="payment_gateway" id="iyzipay" value="iyzipay"> --}}
+                                            {{-- <label class="label-text" for="iyzipay">iyzipay</label> --}}
+                                        {{-- </div> --}}
 
                                         <div class="u-s-m-b-13 prepaidMethod"> {{-- We added the prepaidMethod CSS class to disable that payment method (check front/js/custom.js) if the PIN code of that user's Delivery Address doesn't exist in our `prepaid_pincodes` database table --}}
                                             <input type="radio" class="radio-box" name="payment_gateway" id="midtrans" value="midtrans">

@@ -26,11 +26,6 @@
             Config::$isProduction = $this->isProduction;
             Config::$isSanitized = $this->isSanitized;
             Config::$is3ds = $this->is3ds;
-
-            Log::channel('custom')->info(json_encode(Config::$serverKey));
-            Log::channel('custom')->info(json_encode(Config::$isProduction));
-            Log::channel('custom')->info(json_encode(Config::$isSanitized));
-            Log::channel('custom')->info(json_encode(Config::$is3ds));
         }
     }    
 ?>
